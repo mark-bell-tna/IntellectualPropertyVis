@@ -1,0 +1,40 @@
+#!/bin/bash
+
+REGION=eu-west-2
+LAMBDA=neptune-access-lambda
+STATEMENT_ID=statement-id-1
+
+account_id=`aws sts get-caller-identity --output=text  | awk -v var="$mycol_new" -F'\t' '{print $1}'`
+echo Account Id=${account_id}
+
+#read -p "Enter API gateway name: " api_name
+api_name=test-api-script
+aws apigateway create-rest-api --name ${api_name} --description "API Proxy for AWS Lambda function in VPC accessing Amazon Neptune"
+
+echo Searching for ${api_name}
+
+api_id=$(aws apigateway get-rest-apis --query 'items[?name==`'${api_name}'`].id' --output text)
+echo Api Id=${api_id}
+
+parent_id=$(aws apigateway get-resources --rest-api-id ${api_id} --query 'items[?path==`/`].id' --output text)
+echo Parent Id=$parent_id
+
+#aws apigateway create-resource --rest-api-id ${api_id} --path-part {proxy+} --parent-id ${parent_id}
+aws apigateway create-resource --rest-api-id ${api_id} --path-part {proxy+} --parent-id ${parent_id}
+
+proxy_id=$(aws apigateway get-resources --rest-api-id ${api_id} --query 'items[?path==`/{proxy+}`].id' --output text)
+echo Proxy Id=${proxy_id}
+
+aws apigateway put-method --rest-api-id ${api_id} --resource-id ${proxy_id} --http-method ANY --authorization-type NONE
+
+aws apigateway put-integration --rest-api-id ${api_id} \
+--resource-id ${proxy_id} --http-method ANY --type AWS_PROXY \
+--integration-http-method POST \
+--uri arn:aws:apigateway:${REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${REGION}:${account_id}:function:${LAMBDA}/invocations
+
+aws apigateway create-deployment --rest-api-id ${api_id} --stage-name test
+
+aws lambda add-permission --function-name ${LAMBDA} \
+--statement-id ${STATEMENT_ID} --action lambda:* \
+--principal apigateway.amazonaws.com \
+--source-arn arn:aws:execute-api:${REGION}:${account_id}:${api_id}/*/*/*
