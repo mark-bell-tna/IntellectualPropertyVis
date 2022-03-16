@@ -1,0 +1,502 @@
+<!-- Code from d3-graph-gallery.com -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<style>
+        div#my_dataviz{
+        height: 300px;
+        width: 1100;
+        border:1px solid #000;
+        }
+        div#proprietoroutput {
+        height: 600px;
+        width: 1100;
+        border:1px solid #000;
+        overflow: scroll;
+        min-width: 1400px;
+        white-space: nowrap;
+        }
+</style>
+    
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- query by year hyperlinks -->
+<div id="year_links">
+  <a href="./visualize-dates.html">All years</a>
+  <a href="?year=1862">1862</a>
+  <a href="?year=1863">1863</a>
+  <a href="?year=1864">1864</a>
+  <a href="?year=1865">1865</a>
+  <a href="?year=1866">1866</a>
+  <a href="?year=1867">1867</a>
+  <a href="?year=1868">1868</a>
+  <a href="?year=1869">1869</a>
+  <a href="?year=1870">1870</a>
+  <a href="?year=1871">1871</a>
+  <a href="?year=1872">1872</a>
+</div>
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<div id="proprietoroutput"></div>
+
+
+<script>
+
+const params = new Proxy(new URLSearchParams(window.location.search), {
+  get: (searchParams, prop) => searchParams.get(prop),
+});
+let year_filter = params.year
+var partition = params.partition
+
+if (!partition) {
+  partition = "Main"
+}
+// Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
+//let value = params.some_key; // "some_value"
+
+// set the dimensions and margins of the graph
+var margin = {top: 30, right: 20, bottom: 50, left: 50},
+    width = 1400 - margin.left - margin.right,
+    height = 300 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+          
+
+var PROXY_API_URL = "https://yoy2k6g035.execute-api.eu-west-2.amazonaws.com/test/";
+var query = "?partition_key=" + partition
+if (year_filter) {
+  query = query + "&year=" + year_filter
+}
+
+function truncate_text( str, n, useWordBoundary ){
+  if (str.length <= n) { return str; }
+  const subString = str.substr(0, n-1); // the original check
+  return (useWordBoundary 
+    ? subString.substr(0, subString.lastIndexOf(" ")) 
+    : subString) + "(...)";
+};
+
+// Parse the Data
+d3.json(PROXY_API_URL + "/getDateSummary" + query, function(data) {
+
+// X axis
+//console.log(data);
+
+  const tParser = d3.timeParse("%Y%m%d")
+  
+  const tooltip = d3.select("#my_dataviz")
+          .append("div")
+          .attr("class","d3-tooltip")
+          .style("position", "absolute")
+          .style("z-index", "10")
+          .style("visibility", "hidden")
+          .style("padding", "15px")
+          .style("background", "rgba(0,0,0,0.6)")
+          .style("border-radius", "5px")
+          .style("color", "#fff")
+          .text("Count on date");
+  
+  //if (year_filter) {
+  //  const date_year = d3.timeFormat("%Y")
+  //  data = data.filter(function(d) { return date_year(tParser(d.date)) == year_filter})
+  //}
+  var x = d3.scaleTime()
+    .domain(d3.extent(data, d => tParser(d.date)))
+    .range([ 0, width ]);
+  
+  
+  function yearModTwo(date) {
+    return date.getMonth() % 2;
+  }
+  
+  svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x))
+    .selectAll("text")
+      .attr("transform", "translate(-10,0)rotate(-45)")
+      .style("text-anchor", "end");
+  
+  // Add Y axis
+  var y = d3.scaleLinear()
+    .domain([0, d3.max(data, d => d.both)+10])
+    .range([ height, 0]);
+  svg.append("g")
+    .call(d3.axisLeft(y));
+  
+  
+  outputDateFormat = d3.timeFormat("%Y-%m-%d")
+  
+  const barColour = "#1d4289"
+  const cyan70 = "#00539a"
+  const cyan60 = "#0072c3"
+  const cyan50 = "#1192e8"
+  const cyan40 = "#33b1ff"
+  const barColours = [cyan60, cyan50] // Cyan 70 and 60 from IBM
+  //const barColours = ["#3C657A","#2F4A5C"]
+  const barHighlight = "#d0d3d4"
+  const barOverlay = "#ffc845"
+  
+  var summariseProps_location= function(propdata) {
+    return d3.nest()
+      .key(function(d) { return d.proprietor; })
+      .key(function(d) { return d.location; })
+      .rollup(function(v) { return {
+          count: v.length
+        }; 
+      })
+      .map(propdata);
+  }
+  
+  var summariseProps = function(propdata) {
+    return { "children" : d3.nest()
+    .key(function(d) { return d.proprietor})
+    .rollup(function(v) { 
+      return {
+        count: v.length,
+        values: v
+      }; 
+    })
+    .entries(propdata)
+    .sort(function(a,b) { return d3.descending(a.value.count, b.value.count)})
+    .map(function(d) {
+      return {
+        proprietor: d.key,
+        count: d.value.count,
+        children: d.value.values
+      };
+    }) };
+  }
+  
+  var summariseOverlay = function(overlayData) {
+    return  d3.nest()
+    .key(function(d) { return d.date})
+    .rollup(function(v) { 
+      return {
+        count: v.length
+      }; 
+    })
+    .entries(overlayData)
+    
+    //.map(function(d) {
+    //  return {
+    //    proprietor: d.key,
+    //    count: d.value.count,
+    //    children: d.value.values
+  };
+  
+  var showOverlay = function(overlayData) {
+    
+    //summary = summariseOverlay(overlayData)
+    summary = []
+    //console.log([...summary])
+    //var summary = new Map([...overlayData[0]].sort((a,b) => d3.descending(a[1],b[1])));
+    //console.log(summary)
+    //console.log(typeof(summary))
+    for (var s in overlayData[0]) {
+      summary.push([s, overlayData[0][s]])
+    }
+   // console.log(summary)
+    
+    svg.selectAll("overlay")
+    .data(summary)
+    .enter()
+    .append("rect")
+      .attr("class","overlay_rect")
+      .attr("x", function(d) { 
+        return x(tParser(d[0])); })
+      .attr("y", function(d) { return y(d[1]); })
+      .attr("width", 2.2)
+      .attr("height", function(d) { return height - y(d[1]); })
+      .attr("fill", barOverlay)
+      
+  };  // end showOverlay
+  
+  
+  var getPropNodes_new = function(prop_data) {
+    var nodeSize = 20;
+    const prop_svg = d3.select('#proprietoroutput')
+        .append("svg")
+        .attr("viewBox", [-nodeSize / 2, -nodeSize * 3 / 2, width, 200])
+        .attr("font-family", "sans-serif")
+        .attr("font-size", 14)
+        .style("overflow", "visible")
+        .attr('id', 'details');
+    
+    console.log(prop_data)    
+    prop_svg.selectAll("propcircles")
+    .data(prop_data)
+    .enter()
+    .append("circle")
+      .attr("cx", 30)
+      .attr("cy", function(d) { return d.sort_index * nodeSize })
+      .attr("r", 5)
+      .attr("fill", "#999")
+    .on("mouseover", (event, d) => {
+          console.log("hovering", d)
+            var dfp_query = "/summarisingPropDates?name=" + prop_data[d].proprietor
+            if (year_filter) {
+              dfp_query = dfp_query + "&year=" + year_filter
+            }
+            d3.json(PROXY_API_URL + dfp_query, function(proprietordata) {
+              showOverlay(proprietordata);
+            });
+    })
+    .on("mouseout", (event, d) => {
+      //console.log("leaving")
+      svg.selectAll(".overlay_rect")
+        .transition()
+        .duration(300)
+      .remove();
+    });
+  
+    prop_svg.selectAll("proplabels")
+    .data(prop_data)
+    .enter()
+    .append("text")
+        .attr("x", 30 + nodeSize)
+        .attr("y", function(d) {return (d.sort_index * nodeSize) + (nodeSize/3) })
+        .attr("fill", "black")
+        .text(function(d){return 'Count: ' + d.count + " -> " + truncate_text(d.proprietor,100, true) + " -> " + d.location + " -> " + d.class})
+        .append("title").text(function(d) { return d.proprietor})
+  
+    
+  }
+  
+  var getPropNodes = function(summary_data, location_summary) {
+    const nodeSize = 18;
+    
+    var toHierarchy = function(data) {let i = 0; return d3.hierarchy(data).eachBefore(d => d.index = i++); }
+    root = toHierarchy(summary_data);
+  
+    const nodes = root.descendants();
+    //console.log(nodes)
+    
+    const prop_svg = d3.select("#proprietoroutput")
+          .append("svg")
+          .attr("viewBox", [-nodeSize / 2, -nodeSize * 3 / 2, width, (nodes.length + 1) * nodeSize])
+          .attr("font-family", "sans-serif")
+          .attr("font-size", 14)
+          .style("overflow", "visible")
+          .attr('id', 'details');;
+  
+    
+    
+      var update = function(nodes) {
+    
+        //console.log(root.links());
+        const link = prop_svg.append("g")
+            .attr("fill", "none")
+            .attr("stroke", "#999")
+          .selectAll("path")
+          .data(root.links())
+          .enter().append('path')
+            .attr("d", d => `
+              M${d.source.depth * nodeSize},${d.source.index * nodeSize}
+              V${d.target.index * nodeSize}
+              h${nodeSize}
+            `);
+      
+        const node = prop_svg.append("g")
+          .selectAll("g")
+          .data(nodes)
+          .enter().append('g')
+            .attr("transform", d => `translate(0,${d.index * nodeSize})`);
+      
+        node.append("circle")
+            .attr("cx", d => d.depth * nodeSize)
+            .attr("r", 5)
+            .attr("fill", d => d.data.children ? null : "#999")
+            .on("click", (event,d) => {
+              d.children  = d.children ? null : d._children;
+              update(d);
+            })
+            .on("mouseover", (event, d) => {
+              //console.log("hovering")
+              if (nodes[d].data.children) {
+                //var dfp_query = "/datesForProprietor?label=house&name=" + nodes[d].data.proprietor
+                var dfp_query = "/summarisingPropDates?name=" + nodes[d].data.proprietor
+                if (year_filter) {
+                  dfp_query = dfp_query + "&year=" + year_filter
+                }
+                //console.log(dfp_query)
+                
+                //var newdata = d3.json(PROXY_API_URL + "/summarisingPropDates?name=" + nodes[d].data.proprietor + "&year=" + year_filter,
+                //    function(data) {
+                //      console.log("New summary") 
+                //      console.log(data);  
+                //    }
+                //    );
+                d3.json(PROXY_API_URL + dfp_query, function(proprietordata) {
+                  //console.log(proprietordata);
+                  showOverlay(proprietordata);
+                });
+              }
+            })
+            .on("mouseout", (event, d) => {
+              //console.log("leaving")
+              svg.selectAll(".overlay_rect")
+                .transition()
+                .duration(300)
+              .remove();
+            });
+      
+        var get_prop_location = function(d) {
+          //console.log(d)
+          //console.log(location_summary)
+          var l = location_summary.get(d.data.proprietor)
+          if (typeof l !== 'undefined') {
+          return truncate_text(d.data.proprietor,100, true) + " - " + l.keys().join(",");
+          } else {
+            return "";
+          }
+        }
+        
+        const max_text =  100 //d3.max(summary_data.children, d => d.proprietor.length);
+    
+        node.append("text")
+            .attr("dy", "0.32em")
+            .attr("x", d => d.depth * nodeSize + 6)
+            .text(d => d.data.children ? get_prop_location(d): d.data.reference + " - " + d.data.class);
+      
+      
+        node.append("title")
+            .text(d => d.ancestors().reverse().map(d => d.data.proprietor).join("/"));
+      
+        
+      const format = d3.format(",")
+      
+      columns = [
+        {
+          label: "Count", 
+          value: d => d.children ? d.count : null, 
+          format: (value, d) => d.children ? format(value) : null, 
+          x: (max_text > 70 ? max_text : 70) * 8
+        }
+      ]
+      
+        for (const {label, value, format, x} of columns) {
+          prop_svg.append("text")
+              .attr("dy", "0.32em")
+              .attr("y", -nodeSize)
+              .attr("x", x)
+              .attr("text-anchor", "end")
+              .attr("font-weight", "bold")
+              .text(label);
+      
+          node.append("text")
+              .attr("dy", "0.32em")
+              .attr("x", x)
+              .attr("text-anchor", "end")
+              .attr("fill", d => d.children ? "#444" : "#555")
+            .data(root.copy().sum(value).descendants())
+              .text(d => format(d.value, d));
+        }
+      }
+      
+      update(nodes);
+    
+      return prop_svg.node();
+  }
+  
+  
+  
+  var writeprops = function(propdata) {
+    propdata.sort(function(a,b){
+            return d3.ascending(a.p, b.p);
+    });
+    //var summary = summariseProps(propdata);
+    var summary = summariseProps(propdata);
+    var location_summary = summariseProps_location(propdata);
+    
+  
+    var svg_node = getPropNodes(summary, location_summary);
+  
+  };
+  
+    var writeprops_new = function(propsummary) {
+      
+      
+      
+      var new_data = []
+      const field_list = ["date","proprietor","subject","class","location"]
+      var idx = 1;
+      for (var entry in propsummary[0]) {
+        //var this_key = Object.keys(entry)[0];
+        //console.log(entry)
+        new_entry = new Object()
+        new_entry['index'] = idx++;
+        for (var c = 0; c < field_list.length-1; c++) {
+          this_pos = entry.indexOf(field_list[c] + "=")
+          next_pos = entry.indexOf(field_list[c+1] + "=")
+          new_entry[field_list[c]] =  entry.substring(this_pos + field_list[c].length + 1, next_pos - 2)
+        }
+        new_entry[field_list[c]] = entry.substring(next_pos + field_list[c].length + 1, entry.length - 1)
+        new_entry['count'] = propsummary[0][entry]
+        new_data.push(new_entry)
+    }
+    new_data = new_data.sort(function(a,b) {
+        return d3.descending(a.count, b.count);
+      })
+    var c = 1;
+    for (d of new_data) {
+      d['sort_index'] = c++;
+    }
+    console.log(new_data)
+    getPropNodes_new(new_data)
+  }
+  
+  //console.log(data)
+  // Bars
+  svg.selectAll("mybar")
+    .data(data)
+    .enter()
+    .append("rect")
+      .attr("x", function(d) { return x(tParser(d.date)); })
+      .attr("y", function(d) { return y(d.both); })
+      .attr("width", 2.2)
+      .attr("height", function(d) { return height - y(d.both); })
+      .attr("fill", function(d) { return barColours[yearModTwo(tParser(d.date))] })
+      .on("mouseover", function(d, i) {
+              d3.select(this).attr("fill", barHighlight);
+              tooltip.html(`Date: ${outputDateFormat(tParser(d.date))} </br> Count: ${d.both}`).style("visibility", "visible");
+          })
+      .on("mousemove", function(){
+            tooltip
+              .style("top", (event.pageY-10)+"px")
+              .style("left",(event.pageX+10)+"px");
+          })
+      .on("mouseout", function() {
+              d3.select(this).attr("fill", function(d) { return barColours[yearModTwo(tParser(d.date))] }); 
+              tooltip.html(``).style("visibility", "hidden");
+      })
+      .on("click", function(d, i) {
+        //console.log(d.date)
+        //console.log(proprietoroutput);
+        //proprietoroutput.selectAll("svg").remove();
+        d3.select("#proprietoroutput").select("svg").remove();
+        //console.log(proprietoroutput);
+        //var proprietordata = d3.json(PROXY_API_URL + "/proprietorsForDate?label=house&name=");
+        //console.log(proprietordata)
+        //d3.json(PROXY_API_URL + "/proprietorsForDate?partition_key=" + partition + "&name=" + d.date, function(proprietordata) {
+        //  writeprops(proprietordata);
+        //});
+        
+        d3.json(PROXY_API_URL + "/proprietorsDateSummary?partition_key=" + partition + "&name=" + d.date, function(proprietordata) {
+          writeprops_new(proprietordata);
+        });
+        
+        
+  
+    });
+});
+
+</script>
