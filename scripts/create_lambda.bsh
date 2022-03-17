@@ -1,0 +1,19 @@
+#!/bin/bash
+
+. ./initialise_variables.bsh
+
+account_id=`aws sts get-caller-identity --output=text  | awk -v var="$mycol_new" -F'\t' '{print $1}'`
+echo Account Id=${account_id}
+
+neptune_endpoint=$(aws neptune describe-db-clusters --query 'DBClusters[?DBClusterIdentifier==`'${IPP_NEPTUNE_NAME}'`].ReaderEndpoint' --output text)
+echo Neptune Endpoint=${neptune_endpoint}
+
+aws lambda create-function --function-name ${IPP_LAMBDA_NAME} \
+--role "arn:aws:iam::${account_id}:role/service-role/lambda-vpc-access-role" \
+--runtime nodejs14.x --handler indexLambda.handler \
+--description "Lambda function to make gremlin calls to Amazon Neptune" \
+--timeout 120 --memory-size 256 --publish \
+--vpc-config SubnetIds=${IPP_SUBNET_ID},SecurityGroupIds=${IPP_SECURITY_GROUP} \
+--zip-file fileb://../lambda/lambdapackage.zip \
+--environment Variables="{NEPTUNE_CLUSTER_ENDPOINT="${neptune_endpoint}",NEPTUNE_PORT=8182}" \
+--tags ${IPP_TAG_STRING}
