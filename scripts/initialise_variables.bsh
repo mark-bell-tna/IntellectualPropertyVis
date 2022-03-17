@@ -1,8 +1,10 @@
 #!/bin/bash
 
+# At a minimum change the values for Subnet Id, Security Group, and Tag String
 IPP_LAMBDA_NAME=neptune-access-lambda
 IPP_SUBNET_ID=<Enter Subnet Id here>
 IPP_SECURITY_GROUP=<Enter Security Group Id here>
 IPP_NEPTUNE_NAME=intellectual-property-dev
 IPP_TAG_STRING="Department=MyDepartment,CostCentre=MyCostCentre,AccountCode=MyAccountCode,Project=MyProject"
 IPP_REGION=eu-west-2
+IPP_S3_BUCKET=neptune-ip-bucket  # Must be unique for the region

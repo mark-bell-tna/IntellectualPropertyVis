@@ -1,0 +1,16 @@
+#/bin/bash
+
+. ./initialise_variables.bsh
+
+#create Amazon S3 bucket with public read access
+aws s3api create-bucket --bucket ${IPP_S3_BUCKET} --acl public-read --region ${IPP_REGION} --create-bucket-configuration LocationConstraint=${IPP_REGION}
+
+#configure website hosting on S3 bucket
+aws s3api put-bucket-website --bucket ${IPP_S3_BUCKET} --tags ${IPP_TAG_STRING} --website-configuration '{
+    "IndexDocument": {
+        "Suffix": "visualize-graph.html"
+    },
+    "ErrorDocument": {
+        "Key": "visualization-error.html"
+    }
+}'
