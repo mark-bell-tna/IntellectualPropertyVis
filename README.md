@@ -1,5 +1,11 @@
 # IntellectualPropertyVis
-Web front end for Intellectual Property project
+Web front end for Intellectual Property project. There are four interactive visualisations embedded in HTML. Three are developed in D3 and one is vis.js (originally sourced from an Amazon tutorial [example](https://github.com/aws-samples/amazon-neptune-samples/tree/master/gremlin/visjs-neptune)).
+
+The four visualisations are:
+1. visualize-dates.html: Summary of records by day, filterable by Year and available for both BT/43 and COPY/1. Interactive components include: providing a day summary by company on click of a bar; Overlaying proprietor activity on mouse over proprietor.
+2. visualize-by-place.html: Stacked chart of records by location (county, country, large city/town), and by Registered Design Class (BT/43 only). Filterable by year. Interactive components include: Numerical summary on click of location bar
+3. visualize-graph.html: Browsable network visualisation of locations in BT/43 (1872). Uses vis.js as based on AWS example. Interactive components include: search for location; click to find sub-locations of node (e.g places in Yorkshire); ctrl+click to find parent of node (e.g. Yorkshire is parent of Leeds); alt+click to remove nodes form graph
+4. visualize-words.html: Top 250 words (minus stop words) found in COPY/1 descriptions, size by frequency. Interactive components include: display barchart of co-located words on click of individual word
 
 ## Instructions
 
