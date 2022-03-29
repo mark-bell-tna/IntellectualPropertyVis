@@ -6,6 +6,8 @@ The BT_43_metadata_to_graph.py should be run first as it loads the 'spine' of th
 One approach may be to load a single year for each data type, and then test the visualisations. Another approach would be load all of the metadata and then incrementally add the other data types. To load all years, simply create a loop at the command line passing each year in turn as a parameter.
 The date visualisation requires only the basic metadata at a minimum, although other data is needed to get value from the interactive elements. The other graphs all require the full set of data types for each year.
 
+<b>Note: Each script will need to be amended to point to the correct endpoint for the Neptune graph database instance
+
 ## Suggested loading process for 1872:
 
 1. BT_43_metadata_to_graph.py 1872
