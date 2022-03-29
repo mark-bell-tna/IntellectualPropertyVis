@@ -1,0 +1,189 @@
+ENTRYSTART|reference:04e297193d716550414fbaf41118796f|from_date:18620903|to_date:18620903|entrytype:class|source:BT 43/129/154290
+22|class|Aa{*}|Aa{4}|B-FLD
+23|6|9|9|I-FLD
+24|:|:|:|I-FLD
+25|carpets|Aa{*}|Aa{6}|
+26|and|a{*}|a{3}|
+27|floor|a{*}|a{5}|
+28|coverings|a{*}|a{9}|
+29|.|.|.|
+ENTRYSTART|reference:c33e68d6c03a63fc6fe6300b71681f51|from_date:18620324|to_date:18620324|entrytype:class|source:BT 43/128/150192
+26|class|Aa{*}|Aa{4}|B-FLD
+27|6|9|9|I-FLD
+28|:|:|:|I-FLD
+29|carpets|Aa{*}|Aa{6}|
+30|and|a{*}|a{3}|
+31|floor|a{*}|a{5}|
+32|coverings|a{*}|a{9}|
+ENTRYSTART|reference:b6c641f8982e7e6aef5425f281d2cd6b|from_date:18620318|to_date:18620318|entrytype:class|source:BT 43/283/150068
+28|class|Aa{*}|Aa{4}|B-FLD
+29|10|9{*}|9{2}|I-FLD
+30|:|:|:|I-FLD
+31|printed|a{*}|a{7}|
+32|fabric|a{*}|a{6}|
+ENTRYSTART|reference:398b22157b9375f92a153f32ae21f478|from_date:18620103|to_date:18620103|entrytype:class|source:BT 43/362/148325
+31|class|Aa{*}|Aa{4}|B-FLD
+32|11|9{*}|9{2}|I-FLD
+33|:|:|:|I-FLD
+34|furnitures|Aa{*}|Aa{9}|
+35|fabric|a{*}|a{6}|
+ENTRYSTART|reference:18a548275ba78ea2b39602bf252e6074|from_date:18620111|to_date:18620111|entrytype:class|source:BT 43/283/148521
+26|class|Aa{*}|Aa{4}|B-FLD
+27|10|9{*}|9{2}|I-FLD
+28|:|:|:|I-FLD
+29|printed|a{*}|a{7}|
+30|fabrics|a{*}|a{7}|
+ENTRYSTART|reference:c32a541282c1b93a338fb9128fae8e77|from_date:18620825|to_date:18620825|entrytype:class|source:BT 43/13/154146
+34|class|Aa{*}|Aa{4}|B-FLD
+35|1|9|9|I-FLD
+36|:|:|:|I-FLD
+37|metal|a{*}|a{5}|
+ENTRYSTART|reference:68797d1e355163e73a20f687563340bd|from_date:18620809|to_date:18620809|entrytype:class|source:BT 43/397/153688
+23|class|Aa{*}|Aa{4}|B-FLD
+24|12|9{*}|9{2}|I-FLD
+25|i|a|a|I-FLD
+26|:|:|:|I-FLD
+27|other|a{*}|a{5}|
+28|fabrics|a{*}|a{7}|
+ENTRYSTART|reference:f06084847238d351baa7abe44413d06b|from_date:18620408|to_date:18620408|entrytype:class|source:BT 43/426/150530
+34|class|Aa{*}|Aa{4}|B-FLD
+35|13|9{*}|9{2}|I-FLD
+36|:|:|:|I-FLD
+37|lace|Aa{*}|Aa{3}|
+38|or|a{*}|a{2}|
+39|miscellanea|Aa{*}|Aa{10}|
+ENTRYSTART|reference:dfd065544cdbcce90f323cef50c0eefa|from_date:18620627|to_date:18620627|entrytype:class|source:BT 43/411/152736
+25|class|Aa{*}|Aa{4}|B-FLD
+26|12|9{*}|9{2}|I-FLD
+27|ii|a{*}|a{2}|I-FLD
+28|:|:|:|I-FLD
+29|damask|a{*}|a{6}|
+ENTRYSTART|reference:b0b568020e4d94f5a63a4fa79955d304|from_date:18620419|to_date:18620419|entrytype:class|source:BT 43/99/151078
+27|class|Aa{*}|Aa{4}|B-FLD
+28|5|9|9|I-FLD
+29|:|:|:|I-FLD
+30|paper|Aa{*}|Aa{4}|
+31|hangings|a{*}|a{8}|
+ENTRYSTART|reference:d3e3e28ce3000d5e0b5e43bbd2f12be9|from_date:18620704|to_date:18620704|entrytype:class|source:BT 43/67/152963
+22|class|Aa{*}|Aa{4}|B-FLD
+23|4|9|9|I-FLD
+24|:|:|:|I-FLD
+25|earthenware|a{*}|a{11}|
+ENTRYSTART|reference:2c9f9778aedf744b6c2a7f457e7c60ff|from_date:18621121|to_date:18621121|entrytype:class|source:BT 43/179/157799
+25|class|Aa{*}|Aa{4}|B-FLD
+26|7|9|9|I-FLD
+27|:|:|:|I-FLD
+28|printed|a{*}|a{7}|
+29|shawls|a{*}|a{6}|
+ENTRYSTART|reference:04e7905384770001e2075a7695e9d63d|from_date:18620305|to_date:18620305|entrytype:class|source:BT 43/185/149798
+25|class|Aa{*}|Aa{4}|B-FLD
+26|8|9|9|I-FLD
+27|:|:|:|I-FLD
+28|other|a{*}|a{5}|
+29|woven|a{*}|a{5}|
+30|,|,|,|
+31|etc|a{*}|a{3}|
+32|shawls|a{*}|a{6}|
+ENTRYSTART|reference:3f4194e8faf932eb0f20bbb9bfa27c41|from_date:18620217|to_date:18620217|entrytype:class|source:BT 43/426/149364
+32|class|Aa{*}|Aa{4}|B-FLD
+33|13|9{*}|9{2}|I-FLD
+34|:|:|:|I-FLD
+35|miscellanea|Aa{*}|Aa{10}|
+ENTRYSTART|reference:67db1a9b13f1e0535eeab7ef8efc6106|from_date:18620214|to_date:18620214|entrytype:class|source:BT 43/13/149950
+27|class|Aa{*}|Aa{4}|B-FLD
+28|1|9|9|I-FLD
+29|:|:|:|I-FLD
+30|metal|a{*}|a{5}|
+31|.|.|.|
+ENTRYSTART|reference:ae14bfd8152dc63cf26c15ec2b9495d8|from_date:18620428|to_date:18620428|entrytype:class|source:BT 43/61/151265
+28|class|Aa{*}|Aa{4}|B-FLD
+29|3|9|9|I-FLD
+30|:|:|:|I-FLD
+31|glass|a{*}|a{5}|
+ENTRYSTART|reference:fd1af6be0b399b8df9d31323028f70c6|from_date:18620923|to_date:18620923|entrytype:class|source:BT 43/129/155108
+23|class|Aa{*}|Aa{4}|B-FLD
+24|6|9|9|I-FLD
+25|:|:|:|I-FLD
+26|carpets|Aa{*}|Aa{6}|
+27|and|a{*}|a{3}|
+28|floor|a{*}|a{5}|
+29|coverings|a{*}|a{9}|
+30|.|.|.|
+31|annotated|Aa{*}|Aa{8}|
+32|on|a{*}|a{2}|
+33|design|a{*}|a{6}|
+34|:|:|:|
+ENTRYSTART|reference:acf1cdfecfc438079ee160447b91cd6f|from_date:18621002|to_date:18621002|entrytype:class|source:BT 43/58/155270
+28|class|Aa{*}|Aa{4}|B-FLD
+29|2|9|9|I-FLD
+30|:|:|:|I-FLD
+31|wood|a{*}|a{4}|
+ENTRYSTART|reference:cc60627b58a696355edbe2d03ffb4a6d|from_date:18620111|to_date:18620111|entrytype:class|source:BT 43/67/148517
+26|class|Aa{*}|Aa{4}|B-FLD
+27|4|9|9|I-FLD
+28|:|:|:|I-FLD
+29|earthenware|a{*}|a{11}|
+30|.|.|.|
+ENTRYSTART|reference:5a88c8e7e9d24bcb761e3986b89dde8f|from_date:18620923|to_date:18620923|entrytype:class|source:BT 43/99/155128
+25|class|Aa{*}|Aa{4}|B-FLD
+26|5|9|9|I-FLD
+27|:|:|:|I-FLD
+28|paper|Aa{*}|Aa{4}|
+29|hangings|a{*}|a{8}|
+30|.|.|.|
+ENTRYSTART|reference:77a94f161c031ba65e804b55a5801348|from_date:18620404|to_date:18620404|entrytype:class|source:BT 43/13/150459
+34|class|Aa{*}|Aa{4}|B-FLD
+35|1|9|9|I-FLD
+36|:|:|:|I-FLD
+37|metal|a{*}|a{5}|
+38|.|.|.|
+39|note|Aa{*}|Aa{3}|
+40|:|:|:|
+41|13th|9{*}a{*}|9{2}a{2}|
+42|april|Aa{*}|Aa{4}|
+43|1864|9{*}|9{4}|
+44|copyright|a{*}|a{9}|
+45|extended|a{*}|a{8}|
+46|2|9|9|
+47|years|a{*}|a{5}|
+ENTRYSTART|reference:177c7ef902d0b4256885cdacc7b48cf7|from_date:18621121|to_date:18621121|entrytype:class|source:BT 43/58/157705
+26|class|Aa{*}|Aa{4}|B-FLD
+27|2|9|9|I-FLD
+28|:|:|:|I-FLD
+29|wood|a{*}|a{4}|
+30|.|.|.|
+ENTRYSTART|reference:9b898befba11129562b91d4f77442e9e|from_date:18620822|to_date:18620822|entrytype:class|source:BT 43/187/154055
+33|class|Aa{*}|Aa{4}|B-FLD
+34|9|9|9|I-FLD
+35|:|:|:|I-FLD
+36|yarn|Aa{*}|Aa{3}|
+ENTRYSTART|reference:7f17032a7e580616a7c3fb3f932bb434|from_date:18620514|to_date:18620514|entrytype:class|source:BT 43/411/151804
+28|class|Aa{*}|Aa{4}|B-FLD
+29|12|9{*}|9{2}|I-FLD
+30|ii|a{*}|a{2}|I-FLD
+31|:|:|:|I-FLD
+32|damask|a{*}|a{6}|
+33|.|.|.|
+ENTRYSTART|reference:67dec81a679271b3b977e4090ba38147|from_date:18620117|to_date:18620117|entrytype:class|source:BT 43/185/159162
+24|class|Aa{*}|Aa{4}|B-FLD
+25|8|9|9|I-FLD
+26|:|:|:|I-FLD
+27|other|a{*}|a{5}|
+28|woven|a{*}|a{5}|
+29|,|,|,|
+30|etc|a{*}|a{3}|
+31|shawls|a{*}|a{6}|
+32|.|.|.|
+ENTRYSTART|reference:18009d3b353ead725e1b39e8a956b91d|from_date:18621208|to_date:18621208|entrytype:class|source:BT 43/67/158196
+25|class|Aa{*}|Aa{4}|B-FLD
+26|4|9|9|I-FLD
+27|:|:|:|I-FLD
+28|earthenware|a{*}|a{11}|
+29|.|.|.|
+30|note|Aa{*}|Aa{3}|
+ENTRYSTART|reference:08d9d19fb0e101f61bab93049ef709eb|from_date:18620507|to_date:18620507|entrytype:class|source:BT 43/61/151468
+36|class|Aa{*}|Aa{4}|B-FLD
+37|3|9|9|I-FLD
+38|:|:|:|I-FLD
+39|glass|a{*}|a{5}|
+40|.|.|.|
