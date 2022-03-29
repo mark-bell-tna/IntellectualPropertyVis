@@ -1,0 +1,279 @@
+<!-- Code from d3-graph-gallery.com -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<style>
+        div#my_dataviz{
+        height: 300px;
+        width: 1100;
+        border:1px solid #000;
+        }
+        div#proprietoroutput {
+        height: 600px;
+        width: 1100;
+        border:1px solid #000;
+        overflow: scroll;
+        min-width: 1400px;
+        white-space: nowrap;
+        }
+</style>
+    
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+
+<!-- Create a div where the graph will take place -->
+<div id="summary_graph"></div>
+
+<div id="proprietoroutput"></div>
+
+
+<script>
+
+const params = new Proxy(new URLSearchParams(window.location.search), {
+  get: (searchParams, prop) => searchParams.get(prop),
+});
+let year_filter = params.year
+var partition = params.partition
+
+if (!partition) {
+  partition = "COPY_1_words"
+}
+// Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
+//let value = params.some_key; // "some_value"
+
+// set the dimensions and margins of the graph
+var margin = {top: 30, right: 20, bottom: 50, left: 50},
+    width = 1400 - margin.left - margin.right,
+    height = 300 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var graph_svg = d3.select("#summary_graph")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+          
+
+var PROXY_API_URL = "https://yoy2k6g035.execute-api.eu-west-2.amazonaws.com/test/";
+var query = "?partition_key=" + partition
+if (year_filter) {
+  query = query + "&year=" + year_filter
+}
+
+function truncate_text( str, n, useWordBoundary ){
+  if (str.length <= n) { return str; }
+  const subString = str.substr(0, n-1); // the original check
+  return (useWordBoundary 
+    ? subString.substr(0, subString.lastIndexOf(" ")) 
+    : subString) + "(...)";
+};
+
+// Parse the Data
+d3.json(PROXY_API_URL + "/TopCopy1Words" + query, function(data) {
+
+// X axis
+console.log(data);
+
+  const tParser = d3.timeParse("%Y%m%d")
+  
+  const tooltip = d3.select("#my_dataviz")
+          .append("div")
+          .attr("class","d3-tooltip")
+          .style("position", "absolute")
+          .style("z-index", "10")
+          .style("visibility", "hidden")
+          .style("padding", "15px")
+          .style("background", "rgba(0,0,0,0.6)")
+          .style("border-radius", "5px")
+          .style("color", "#fff")
+          .text("Count on date");
+  
+  //if (year_filter) {
+  //  const date_year = d3.timeFormat("%Y")
+  //  data = data.filter(function(d) { return date_year(tParser(d.date)) == year_filter})
+  //}
+  //var x = d3.scaleTime()
+  //  .domain(d3.extent(data, d => tParser(d.date)))
+  //  .range([ 0, width ]);
+  
+  
+  
+  //svg.append("g")
+  //  .attr("transform", "translate(0," + height + ")")
+  //  .call(d3.axisBottom(x))
+  //  .selectAll("text")
+  //    .attr("transform", "translate(-10,0)rotate(-45)")
+  //    .style("text-anchor", "end");
+  
+  // Add Y axis
+  //var y = d3.scaleLinear()
+  //  .domain([0, d3.max(data, d => d.both)+10])
+  //  .range([ height, 0]);
+  //svg.append("g")
+  //  .call(d3.axisLeft(y));
+  
+  
+  const barColour = "#1d4289"
+  const cyan70 = "#00539a"
+  const cyan60 = "#0072c3"
+  const cyan50 = "#1192e8"
+  const cyan40 = "#33b1ff"
+  const barColours = [cyan60, cyan50] // Cyan 70 and 60 from IBM
+  //const barColours = ["#3C657A","#2F4A5C"]
+  const barHighlight = "#d0d3d4"
+  const barOverlay = "#ffc845"
+
+  //console.log(data)
+  // Bars
+  
+  var colocation_graph = function(graph_data) {
+ 
+    //var x = d3.scaleTime()
+  //  .domain(d3.extent(data, d => tParser(d.date)))
+  //  .range([ 0, width ]);
+  
+  let xScale = d3.scalePoint()
+    .domain([...new Set(graph_data.map(item => item.co_word))])
+    .range([0, 1000]);
+    
+  console.log(d3.extent(graph_data, d => d.weight))
+  
+  let yScale = d3.scaleLinear()
+    .domain(d3.extent(graph_data, d => d.weight))
+    .range([200,0])
+  
+  graph_svg.append("g")
+      .attr("transform","translate(50,200)")
+      .call(d3.axisBottom(xScale))
+      .selectAll("text")
+        .attr("font-size", 12)
+        .attr("transform", "translate(0,0)rotate(-45)")
+        .style("text-anchor", "end");
+        
+  graph_svg.append("g")
+    .call(d3.axisLeft(yScale));   
+  
+  //svg.append("g")
+  //  .attr("transform", "translate(0," + height + ")")
+  //  .call(d3.axisBottom(x))
+  //  .selectAll("text")
+  //    .attr("transform", "translate(-10,0)rotate(-45)")
+  //    .style("text-anchor", "end");
+  
+  // Add Y axis
+  //var y = d3.scaleLinear()
+  //  .domain([0, d3.max(data, d => d.both)+10])
+  //  .range([ height, 0]);
+  //svg.append("g")
+  //  .call(d3.axisLeft(y));   
+  
+  for (var row of graph_data) {
+    console.log(row.co_word, row.weight, yScale(row.weight))
+  }
+  
+  graph_svg.selectAll("co_bars")
+    .data(graph_data)
+    .enter()
+    .append("rect")
+      .attr("transform","translate(40,-20)")
+      .attr("x", function(d) { return xScale(d.co_word); })
+      .attr("y", function(d) { return yScale(d.weight); })
+      .attr("width", 22)
+      .attr("height", function(d) { return height - yScale(d.weight); })
+      .attr("fill", function(d) { return barColours[0] })
+  //    .on("mouseover", function(d, i) {
+  //            d3.select(this).attr("fill", barHighlight);
+  //            tooltip.html(`Date: ${outputDateFormat(tParser(d.date))} </br> Count: ${d.both}`).style("visibility", "visible");
+  //        })
+  //    .on("mousemove", function(){
+  //          tooltip
+  //          .style("top", (event.pageY-10)+"px")
+  //            .style("left",(event.pageX+10)+"px");
+  //        })
+  //    .on("mouseout", function() {
+  //            d3.select(this).attr("fill", function(d) { return barColours[yearModTwo(tParser(d.date))] }); 
+  //            tooltip.html(``).style("visibility", "hidden");
+  //    })
+  //    .on("click", function(d, i) {
+  //      //console.log(d.date)
+  //      //console.log(proprietoroutput);
+  //      //proprietoroutput.selectAll("svg").remove();
+  //      d3.select("#proprietoroutput").select("svg").remove();
+  //      //console.log(proprietoroutput);
+  //      //var proprietordata = d3.json(PROXY_API_URL + "/proprietorsForDate?label=house&name=");
+  //      //console.log(proprietordata)
+  //      //d3.json(PROXY_API_URL + "/proprietorsForDate?partition_key=" + partition + "&name=" + d.date, function(proprietordata) {
+  //      //  writeprops(proprietordata);
+  //      //});
+        
+  //      d3.json(PROXY_API_URL + "/proprietorsDateSummary?partition_key=" + partition + "&name=" + d.date, function(proprietordata) {
+  //        writeprops_new(proprietordata);
+  //      });
+        
+  }  
+  
+  //  });  
+
+  var getPropNodes_new = function(prop_data) {
+    var nodeSize = 130;
+    const prop_svg = d3.select('#proprietoroutput')
+        .append("svg")
+        .style("overflow", "visible")
+        .attr('id', 'details');
+    
+    console.log(prop_data)    
+    
+    console.log(d3.extent(prop_data, d => d.count[0]))
+    var wordScale = d3.scaleLog()
+      .domain(d3.extent(prop_data, d => d.count[0]))
+      .range([ 15, 25]);
+
+  
+    prop_svg.selectAll("proplabels")
+    .data(prop_data)
+    .enter()
+    .append("text")
+        .attr("x", function(d) {return ((d.sort_index % 10) * nodeSize)+40})
+        .attr("y", function(d) {return (Math.trunc(d.sort_index / 10)  * 22)+45})
+        .attr("fill", "black")
+        .attr("font-size", function(d){return wordScale(d.count)})
+        .text(function(d){return d.word})
+      .on("mouseover", (event, d) => {
+        graph_svg.selectAll("rect")
+                .transition()
+                .duration(100)
+              .remove();
+        graph_svg.selectAll("g")
+                .transition()
+                .duration(20)
+              .remove();
+              
+        var query = "/WordColocations?partition_key=COPY_1_words&name=" + prop_data[d].word
+        d3.json(PROXY_API_URL + query, function(colocation_data) {
+          console.log(colocation_data)
+          colocation_graph(colocation_data)
+        })
+      })
+      .on("mouseout", (event, d) => {
+        
+      })
+      
+  
+    
+  }
+  
+  var mydata = [{"word":"apple", "size":10, "sort_index": 0}, {"word":"banana","size":20,"sort_index":1}, {"word":"carrot","size":12,"sort_index":2},
+                {"word":"apple", "size":10, "sort_index": 3}, {"word":"banana","size":20,"sort_index":4}, {"word":"carrot","size":12,"sort_index":5},
+                {"word":"apple", "size":10, "sort_index": 6}, {"word":"banana","size":20,"sort_index":7}, {"word":"carrot","size":12,"sort_index":8},
+                {"word":"apple", "size":10, "sort_index": 9}, {"word":"banana","size":20,"sort_index":10}, {"word":"carrot","size":12,"sort_index":11},
+                {"word":"apple", "size":10, "sort_index": 12}, {"word":"banana","size":20,"sort_index":13}, {"word":"carrot","size":12,"sort_index":14}]
+  
+  getPropNodes_new(data)
+  
+
+});
+
+</script>
