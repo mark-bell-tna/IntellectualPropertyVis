@@ -1,0 +1,263 @@
+<!-- Code from d3-graph-gallery.com -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v7.js"></script>
+
+<div id="year_links">
+  <a href="https://neptune-ip-bucket.s3.eu-west-2.amazonaws.com/visualize-by-place.html">All years</a>
+  <a href="https://neptune-ip-bucket.s3.eu-west-2.amazonaws.com/visualize-by-place.html?year=1862">1862</a>
+  <a href="https://neptune-ip-bucket.s3.eu-west-2.amazonaws.com/visualize-by-place.html?year=1863">1863</a>
+  <a href="https://neptune-ip-bucket.s3.eu-west-2.amazonaws.com/visualize-by-place.html?year=1864">1864</a>
+  <a href="https://neptune-ip-bucket.s3.eu-west-2.amazonaws.com/visualize-by-place.html?year=1865">1865</a>
+  <a href="https://neptune-ip-bucket.s3.eu-west-2.amazonaws.com/visualize-by-place.html?year=1866">1866</a>
+  <a href="https://neptune-ip-bucket.s3.eu-west-2.amazonaws.com/visualize-by-place.html?year=1867">1867</a>
+  <a href="https://neptune-ip-bucket.s3.eu-west-2.amazonaws.com/visualize-by-place.html?year=1868">1868</a>
+  <a href="https://neptune-ip-bucket.s3.eu-west-2.amazonaws.com/visualize-by-place.html?year=1869">1869</a>
+  <a href="https://neptune-ip-bucket.s3.eu-west-2.amazonaws.com/visualize-by-place.html?year=1870">1870</a>
+  <a href="https://neptune-ip-bucket.s3.eu-west-2.amazonaws.com/visualize-by-place.html?year=1871">1871</a>
+  <a href="https://neptune-ip-bucket.s3.eu-west-2.amazonaws.com/visualize-by-place.html?year=1872">1872</a>
+</div>
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<div id="proprietoroutput"></div>
+
+
+<script>
+
+
+
+const params = new Proxy(new URLSearchParams(window.location.search), {
+  get: (searchParams, prop) => searchParams.get(prop),
+});
+let year_filter = params.year
+
+var PROXY_API_URL = "https://yoy2k6g035.execute-api.eu-west-2.amazonaws.com/test/";
+
+var query = "?partition_key=Main&label=record_date&name=has_date"
+if (year_filter) {
+  query = query + "&year=" + year_filter
+}
+console.log(query)
+
+
+// Parse the Data
+const data = d3.json(PROXY_API_URL + "/SummarisingLocations" + query)
+  .then(
+  function(data) {
+  
+    console.log(data);  
+    var new_data = []
+    
+    for (var entry in data[0]) {
+      //var this_key = Object.keys(entry)[0];
+      var loc_pos = entry.indexOf('loc=');
+      var cls_pos = entry.indexOf('cls=');
+      //console.log(entry, loc_pos, cls_pos)
+      new_data.push({
+        "classname": entry.substring(cls_pos+4,loc_pos-2),
+        "location": entry.substring(loc_pos+4, entry.length-1),
+          "count": data[0][entry]
+      })
+    }
+    //new_data.push(myvar);
+    //console.log(this_key['loc'])
+  
+  const tooltip = d3.select("#my_dataviz")
+        .append("div")
+        .attr("class","d3-tooltip")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .style("padding", "15px")
+        .style("background", "rgba(0,0,0,0.6)")
+        .style("border-radius", "5px")
+        .style("color", "#fff")
+        .text("Count on date");
+
+  var data_summary = d3.rollup(new_data, v => d3.sum(v, d => d.count), d => d.location, d => d.classname)
+ 
+  var location_summary = d3.rollup(new_data, v => d3.sum(v, d => d.count), d => d.location)
+  //console.log(location_summary)
+ 
+  var location_sorted = d3.rollups(new_data, v => d3.sum(v, d => d.count), d => d.location).sort(function(a, b){return d3.descending(a[1], b[1])})
+  //console.log(location_sorted)
+
+  var class_summary = d3.rollup(new_data, v => d3.sum(v, d => d.count), d => d.classname)
+ 
+  var classes = new Map([...class_summary.entries()])
+  //console.log(classes)
+
+  //const width = 1000
+
+  console.log(location_summary)
+
+  
+  var margin = {top: 75, right: 50, bottom: 100, left: 50},
+    legend_space = 300,
+    width = 1300 - margin.left - margin.right,
+    height = 1500 - margin.top - margin.bottom,
+    main_width = (width - legend_space) * 0.75,
+    chart_buffer = (width - legend_space) * 0.05,
+    legend_buffer = 30,
+    sum_width = (width-legend_space) * 0.2,
+    bar_height = 14;
+
+  const colourScheme = ["#6929c4","#1192e8","#005d5d","#9f1853","#fa4d56",
+                        "#520408","#198038","#002d9c","#ee5396","#f1c21b",
+                        "#009d9a","#012749","#ff832b","#a56eff"]
+
+
+  var yOrdering = new Map([...location_summary.entries()].sort((a,b) => d3.descending(a[1],b[1])));
+  var colourOrdering = new Map([...class_summary.entries()].sort((a,b) => d3.descending(a[1],b[1])));
+  var legendOrdering = new Map([...class_summary.entries()].sort((a,b) => d3.ascending(a[0],b[0])));
+  var classColours = d3.scaleOrdinal().domain(colourOrdering.keys()).range(colourScheme);
+  
+  var yScale = d3.scalePoint()
+      .range([0,height])
+      .domain(yOrdering.keys())
+      ;
+  
+  var yAxis = d3.axisLeft()
+    	.scale(yScale)
+    	.ticks(5);
+  
+  var xScale = d3.scaleLinear()
+      .domain([0, d3.max(location_summary.values())+10])
+      .range([ 0, sum_width]);
+  
+  var xAxis = d3.axisBottom()
+      .scale(xScale)
+      .ticks(5);
+      
+  var xAxisTop = d3.axisTop()
+      .scale(xScale)
+      .ticks(5);
+  
+  var legScale = d3.scalePoint()
+      .range([0, 20*classes.size])
+      .domain(legendOrdering.keys())
+    
+
+
+console.log(yOrdering)
+    
+
+var svg = d3.select("#my_dataviz").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+svg.append("g")
+  .attr("class", "axis")
+  .attr("transform", "translate(" + margin.left + "," + 0 + ")")
+  .call(yAxis);
+  
+svg.append("g")
+  .attr("class", "axis")
+  .attr("transform", "translate(" + (margin.left+main_width+chart_buffer) + "," + (height+10) + ")")
+  .call(xAxis)
+  .selectAll("text")
+    .attr("transform", "translate(10,5)rotate(45)");
+    
+svg.append("g")
+  .attr("class", "axis")
+  .attr("transform", "translate(" + (margin.left+main_width+chart_buffer) + "," + (-10) + ")")
+  .call(xAxisTop)
+  .selectAll("text")
+    .attr("transform", "translate(10,-5)rotate(-45)");
+  
+
+
+var proportion_data = []
+for (entry of data_summary) {
+  //console.log(entry)
+  let location = entry[0]
+  let locationcount = location_summary.get(location)
+  let location_proportion = 0
+  var locationClasses = new Map([...data_summary.get(location).entries()].sort((a,b) => d3.descending(a[1],b[1])));
+  for (var class_entry of locationClasses) {
+    let classname = class_entry[0]
+    let classcount = class_entry[1]
+    location_proportion = location_proportion + (classcount/locationcount)
+    proportion_data.push({'location':location, 'classname': classname, 'class_count': classcount,
+                          'location_count': locationcount, 'proportion': classcount/locationcount,
+                          'cumulative_proportion': location_proportion, 'colour': classColours(classname)})
+  }
+}
+
+
+ yEntries = new Array([... yOrdering.entries()])[0]
+ yHeight = (height) / (yEntries.length-1);
+ var legX = main_width + chart_buffer + sum_width + margin.left + legend_buffer
+
+ svg.selectAll("proportion_bar")
+    .data(proportion_data)
+    .enter()
+    .append("rect")
+      .attr("x", function(d) { return ((main_width*(d.cumulative_proportion-d.proportion)))+margin.left + 2; })
+      .attr("y", function(d) { return yScale(d.location)-5; })
+      .attr("height", bar_height)
+      .attr("width", function(d) { return (main_width*d.proportion)+5; })
+      .attr("fill", function(d) { return d.colour})
+      .on("click", function(event,d) {
+        var yPos = d3.pointer(event)[1]+5;
+        console.log("Clicked at " + yPos);
+        //console.log(imageScale.invert(xPos));
+        var j = Math.min(41,Math.trunc(yPos / yHeight));
+        //console.log("Clicked on " + j );
+        console.log("Clicked on " + j + " : " + yEntries[j][0] + " : " + yHeight);
+        var thisLocation = yEntries[j][0]
+        var thisHtml = [thisLocation, ""]
+        var locationClasses = new Map([...data_summary.get(thisLocation).entries()].sort((a,b) => d3.descending(a[1],b[1])));
+        
+        for (entry of locationClasses) {
+          thisHtml.push(entry[0] + " = " + entry[1])
+        }
+        thisHtml = thisHtml.join("<br>")
+        //d3.select(this).attr("fill", barHighlight);
+              tooltip.html(thisHtml)
+                .style("visibility", "visible")
+                .style("top", 450+"px")
+                .style("left",(legX+50)+"px");
+    });
+
+ svg.selectAll("summary_bar")
+    .data(location_summary.entries())
+    .enter()
+    .append("rect")
+      .attr("x", function(d) { return chart_buffer + main_width + margin.left + 2; })
+      .attr("y", function(d) { return yScale(d[0])-5; })
+      .attr("height", 10)
+      .attr("width", function(d) { return xScale(d[1])+1; })
+      .attr("fill", "#1d4289")
+
+console.log(classes)
+var legend = svg.selectAll("legend")
+  .data(classes.entries())
+  .enter()
+  .append("g")   //.attr("transform", function(d, i) { return "translate(0," + i * 10 + ")"; })
+  
+legend.append("rect")
+    .attr("x", legX)
+    .attr("y", function(d) { return legScale(d[0])-10 })
+    .attr("height", 20)
+    .attr("width", 20)
+    .attr("fill", function(d) { return classColours(d[0])})
+    
+legend.append("text")
+    .attr("y", function(d) { return legScale(d[0]); })
+    .attr("x", legX + 23)
+    .attr("dy", ".35em")
+    .style("font-size", "11px")
+    .text(function(d) { return d[0]; });
+//chart(data_summary)
+    
+  });
+
+
+</script>
