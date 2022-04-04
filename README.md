@@ -2,6 +2,8 @@
 
 This project has developed four visualisations for exploration of catalogue entries in The National Archives' collections related to Intellectual Property, in particular BT/43 (Registered Designs) and COPY/1 (Copyright). Each visualisation shows a different aspect of the records and includes interactive components to enable exploration. The first three visualisations use D3.js, and the fourth uses vis.js.
 
+Each visualisation requests data from an Amazon Neptune database by calling a lambda function through an API Gateway. The lambda functions in turn use Gremlin to query the database. The data is separated into partitions: a Main partition for BT/43, a COPY_1 partition for COPY/1 data, and an AddressSum partition for the address data used by Visualisation 4.
+
 ## Visualisation 1: Summary by date
 
 https://<S3 BUCKET NAME>.s3.eu-west-2.amazonaws.com/visualize-dates.html
