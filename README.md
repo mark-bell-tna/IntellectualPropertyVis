@@ -38,8 +38,7 @@ The chart includes the following interactive functionality:
 
     2. Clicking on a bar prints a summary below the chart of all proprietors who registered their designs on that day. An example summary from 17th August 1863 looks like this: Count: 20 -> proprietor : james black and company . -> scotland -> class 10 : printed fabrics
     The clicking event calls a Gremlin query through the API function proprietorsDateSummary:
-    
-    
+ 
 ```
 data = await P_V
     .has('record_date','name', name)
@@ -70,15 +69,15 @@ data = await g.V().has('partition_key', 'Main')
     
 ## Visualisation 2: Summary by location and class
     
-    https://YOUR-S3-BUCKET-NAME.s3.eu-west-2.amazonaws.com/visualize-by-place.html
+https://YOUR-S3-BUCKET-NAME.s3.eu-west-2.amazonaws.com/visualize-by-place.html
     
-    [![Visualise Places](Images/visualise-by-place.png?raw=True)](https://github.com/mark-bell-tna/IntellectualPropertyVis/blob/main/Images/visualise-by-place.png)
+[![Visualise Places](Images/visualise-by-place.png?raw=True)](https://github.com/mark-bell-tna/IntellectualPropertyVis/blob/main/Images/visualise-by-place.png)
     
-    This is a horizontally stacked bar chart of registrations by location (last element of the address) with each bar further broken down by design class (e.g. textiles, metal). It has the same year filtering system as the date graph.
+This is a horizontally stacked bar chart of registrations by location (last element of the address) with each bar further broken down by design class (e.g. textiles, metal). It has the same year filtering system as the date graph.
     
-    The chart includes the following interactive feature:
+The chart includes the following interactive feature:
     
-    1. Clicking a bar opens up a table of counts by Class in a pop up by called the API function SummarisingLocations.
+1. Clicking a bar opens up a table of counts by Class in a pop up by called the API function SummarisingLocations.
     
 ```
 var V;
