@@ -8,7 +8,7 @@ Each visualisation requests data from an Amazon Neptune database by calling a la
 
 https://<S3 BUCKET NAME>.s3.eu-west-2.amazonaws.com/visualize-dates.html
     
-[!Visualise Dates](images/visualise-dates.png?raw=True)
+[[!Visualise Dates](images/visualise-dates.png?raw=True)](https://github.com/mark-bell-tna/IntellectualPropertyVis/blob/main/Images/visualise-dates.png)
 
 This is a bar chart showing counts of records by day (based on their start date in the catalogue). The URL includes a parameter for filtering by individual years (e.g. add ?year=1872 to the URL) or all of data can be displayed in one. Hyperlinks which use this filer are included in the HTML page to navigate to annual charts.
     
