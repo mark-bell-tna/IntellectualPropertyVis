@@ -6,7 +6,7 @@ Each visualisation requests data from an Amazon Neptune database by calling a la
 
 ## Visualisation 1: Summary by date
 
-https://<S3 BUCKET NAME>.s3.eu-west-2.amazonaws.com/visualize-dates.html
+https://YOUR-S3-BUCKET-NAME.s3.eu-west-2.amazonaws.com/visualize-dates.html
     
 [![Visualise Dates](Images/visualise-dates.png?raw=True)](https://github.com/mark-bell-tna/IntellectualPropertyVis/blob/main/Images/visualise-dates.png)
 
@@ -71,6 +71,8 @@ data = await g.V().has('partition_key', 'Main')
 ## Visualisation 2: Summary by location and class
     
     https://<S3 Bucket Name>.s3.eu-west-2.amazonaws.com/visualize-by-place.html
+    
+    [![Visualise Places](Images/visualise-by-place.png?raw=True)](Images/visualise-by-place.png)
     
     This is a horizontally stacked bar chart of registrations by location (last element of the address) with each bar further broken down by design class (e.g. textiles, metal). It has the same year filtering system as the date graph.
     
